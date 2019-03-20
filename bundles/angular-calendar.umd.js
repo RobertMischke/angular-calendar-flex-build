@@ -3419,7 +3419,14 @@
      * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     var CalendarDayAutoScroll = /** @class */ (function () {
-        function CalendarDayAutoScroll() {
+        function CalendarDayAutoScroll(scrollContainer) {
+            console.log("scrollContainer", scrollContainer);
+            if (scrollContainer != null) {
+                this.scrollContainer = scrollContainer;
+            }
+            else {
+                this.scrollContainer = window;
+            }
         }
         /**
          * @param {?} event
@@ -3450,10 +3457,10 @@
                 /** @type {?} */
                 var eventElementTop = eventElementBottom - eventElemHeight;
                 if (eventElementTop < 90) {
-                    window.scroll(0, window.scrollY - 7);
+                    this.scrollContainer.scroll(0, window.scrollY - 7);
                 }
                 else if (window.innerHeight - 20 < eventElementBottom) {
-                    window.scroll(0, window.scrollY + 7);
+                    this.scrollContainer.scroll(0, window.scrollY + 7);
                 }
             };
         return CalendarDayAutoScroll;
@@ -3532,6 +3539,11 @@
              */
             this.snapDraggedEvents = true;
             /**
+             * Optional. On this element the "scroll(x, y)" method gets called, when
+             * an event is dragged to the top or bottom of the viewport.
+             */
+            this.scrollContainer = null;
+            /**
              * Called when an event title is clicked
              */
             this.eventClicked = new core.EventEmitter();
@@ -3588,10 +3600,6 @@
              * @hidden
              */
             this.trackByDayEvent = trackByDayOrWeekEvent;
-            /**
-             * @hidden
-             */
-            this.calendarDayAutoScroll = new CalendarDayAutoScroll();
             this.locale = locale;
         }
         /**
@@ -3613,6 +3621,7 @@
                         _this.cdr.markForCheck();
                     });
                 }
+                this.calendarDayAutoScroll = new CalendarDayAutoScroll(this.scrollContainer);
             };
         /**
          * @hidden
@@ -3982,6 +3991,7 @@
             eventTitleTemplate: [{ type: core.Input }],
             eventActionsTemplate: [{ type: core.Input }],
             snapDraggedEvents: [{ type: core.Input }],
+            scrollContainer: [{ type: core.Input }],
             eventClicked: [{ type: core.Output }],
             hourSegmentClicked: [{ type: core.Output }],
             eventTimesChanged: [{ type: core.Output }],

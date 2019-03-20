@@ -124,6 +124,11 @@ export declare class CalendarDayViewComponent implements OnChanges, OnInit, OnDe
      */
     snapDraggedEvents: boolean;
     /**
+     * Optional. On this element the "scroll(x, y)" method gets called, when
+     * an event is dragged to the top or bottom of the viewport.
+     */
+    scrollContainer: HTMLElement;
+    /**
      * Called when an event title is clicked
      */
     eventClicked: EventEmitter<{

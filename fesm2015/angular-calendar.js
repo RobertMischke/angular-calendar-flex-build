@@ -3287,6 +3287,18 @@ CalendarWeekModule.decorators = [
  */
 class CalendarDayAutoScroll {
     /**
+     * @param {?} scrollContainer
+     */
+    constructor(scrollContainer) {
+        console.log("scrollContainer", scrollContainer);
+        if (scrollContainer != null) {
+            this.scrollContainer = scrollContainer;
+        }
+        else {
+            this.scrollContainer = window;
+        }
+    }
+    /**
      * @param {?} event
      * @return {?}
      */
@@ -3307,10 +3319,10 @@ class CalendarDayAutoScroll {
         /** @type {?} */
         const eventElementTop = eventElementBottom - eventElemHeight;
         if (eventElementTop < 90) {
-            window.scroll(0, window.scrollY - 7);
+            this.scrollContainer.scroll(0, window.scrollY - 7);
         }
         else if (window.innerHeight - 20 < eventElementBottom) {
-            window.scroll(0, window.scrollY + 7);
+            this.scrollContainer.scroll(0, window.scrollY + 7);
         }
     }
 }
@@ -3392,6 +3404,11 @@ class CalendarDayViewComponent {
          */
         this.snapDraggedEvents = true;
         /**
+         * Optional. On this element the "scroll(x, y)" method gets called, when
+         * an event is dragged to the top or bottom of the viewport.
+         */
+        this.scrollContainer = null;
+        /**
          * Called when an event title is clicked
          */
         this.eventClicked = new EventEmitter();
@@ -3448,10 +3465,6 @@ class CalendarDayViewComponent {
          * @hidden
          */
         this.trackByDayEvent = trackByDayOrWeekEvent;
-        /**
-         * @hidden
-         */
-        this.calendarDayAutoScroll = new CalendarDayAutoScroll();
         this.locale = locale;
     }
     /**
@@ -3465,6 +3478,7 @@ class CalendarDayViewComponent {
                 this.cdr.markForCheck();
             });
         }
+        this.calendarDayAutoScroll = new CalendarDayAutoScroll(this.scrollContainer);
     }
     /**
      * @hidden
@@ -3888,6 +3902,7 @@ CalendarDayViewComponent.propDecorators = {
     eventTitleTemplate: [{ type: Input }],
     eventActionsTemplate: [{ type: Input }],
     snapDraggedEvents: [{ type: Input }],
+    scrollContainer: [{ type: Input }],
     eventClicked: [{ type: Output }],
     hourSegmentClicked: [{ type: Output }],
     eventTimesChanged: [{ type: Output }],

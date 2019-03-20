@@ -3,7 +3,7 @@ import { takeUntil } from 'rxjs/operators';
 import { validateEvents, getDayView, getDayViewHourGrid, getMonthView, getWeekViewHeader, getWeekView } from 'calendar-utils';
 export { DAYS_OF_WEEK } from 'calendar-utils';
 import { trigger, style, transition, animate } from '@angular/animations';
-import { __extends, __spread, __assign, __rest } from 'tslib';
+import { __spread, __extends, __assign, __rest } from 'tslib';
 import { DOCUMENT, formatDate, CommonModule } from '@angular/common';
 import { ResizableModule } from 'angular-resizable-element';
 import { DragAndDropModule } from 'angular-draggable-droppable';
@@ -3313,7 +3313,14 @@ var CalendarWeekModule = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 var CalendarDayAutoScroll = /** @class */ (function () {
-    function CalendarDayAutoScroll() {
+    function CalendarDayAutoScroll(scrollContainer) {
+        console.log("scrollContainer", scrollContainer);
+        if (scrollContainer != null) {
+            this.scrollContainer = scrollContainer;
+        }
+        else {
+            this.scrollContainer = window;
+        }
     }
     /**
      * @param {?} event
@@ -3344,10 +3351,10 @@ var CalendarDayAutoScroll = /** @class */ (function () {
         /** @type {?} */
         var eventElementTop = eventElementBottom - eventElemHeight;
         if (eventElementTop < 90) {
-            window.scroll(0, window.scrollY - 7);
+            this.scrollContainer.scroll(0, window.scrollY - 7);
         }
         else if (window.innerHeight - 20 < eventElementBottom) {
-            window.scroll(0, window.scrollY + 7);
+            this.scrollContainer.scroll(0, window.scrollY + 7);
         }
     };
     return CalendarDayAutoScroll;
@@ -3426,6 +3433,11 @@ var CalendarDayViewComponent = /** @class */ (function () {
          */
         this.snapDraggedEvents = true;
         /**
+         * Optional. On this element the "scroll(x, y)" method gets called, when
+         * an event is dragged to the top or bottom of the viewport.
+         */
+        this.scrollContainer = null;
+        /**
          * Called when an event title is clicked
          */
         this.eventClicked = new EventEmitter();
@@ -3482,10 +3494,6 @@ var CalendarDayViewComponent = /** @class */ (function () {
          * @hidden
          */
         this.trackByDayEvent = trackByDayOrWeekEvent;
-        /**
-         * @hidden
-         */
-        this.calendarDayAutoScroll = new CalendarDayAutoScroll();
         this.locale = locale;
     }
     /**
@@ -3507,6 +3515,7 @@ var CalendarDayViewComponent = /** @class */ (function () {
                 _this.cdr.markForCheck();
             });
         }
+        this.calendarDayAutoScroll = new CalendarDayAutoScroll(this.scrollContainer);
     };
     /**
      * @hidden
@@ -3874,6 +3883,7 @@ var CalendarDayViewComponent = /** @class */ (function () {
         eventTitleTemplate: [{ type: Input }],
         eventActionsTemplate: [{ type: Input }],
         snapDraggedEvents: [{ type: Input }],
+        scrollContainer: [{ type: Input }],
         eventClicked: [{ type: Output }],
         hourSegmentClicked: [{ type: Output }],
         eventTimesChanged: [{ type: Output }],
